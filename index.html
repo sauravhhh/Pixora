@@ -3,88 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pixora</title>
+    <title>Pixora — Photo Editor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
+* {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            --bg: #0c0c0f;
+            --panel: #141418;
+            --panel-2: #1c1c22;
+            --panel-3: #26262e;
+            --hairline: rgba(255, 255, 255, 0.08);
+            --text: #f5f5f7;
+            --text-2: #a7a7ae;
+            --text-3: #6e6e76;
+            --accent: #4d8dff;
+            --accent-soft: rgba(77, 141, 255, 0.14);
+            --danger: #ff453a;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f7;
-            color: #1d1d1f;
-            overflow-x: hidden;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
             -webkit-user-select: none;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .container {
-            max-width: 100vw;
-            min-height: 100vh;
+            height: 100dvh;
+            max-height: 100dvh;
             display: flex;
             flex-direction: column;
         }
 
-        .header {
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.95);
+        /* ---------- Top bar ---------- */
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: rgba(12, 12, 15, 0.85);
             backdrop-filter: blur(20px);
-            border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--hairline);
+            z-index: 50;
+            flex-shrink: 0;
         }
 
-        .header h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            text-align: center;
-            letter-spacing: -0.02em;
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+
+        .brand-mark {
+            width: 30px;
+            height: 30px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #4d8dff, #8b5cf6);
+            color: #fff;
+            font-size: 15px;
+            box-shadow: 0 4px 14px rgba(77, 141, 255, 0.35);
+        }
+
+        .brand-name {
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .top-actions {
+            display: none;
+            align-items: center;
+            gap: 2px;
+        }
+
+        body.editing .top-actions {
+            display: flex;
+        }
+
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: var(--text-2);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, color 0.2s, transform 0.15s;
+        }
+
+        .icon-btn:hover {
+            background: var(--panel-2);
+            color: var(--text);
+        }
+
+        .icon-btn:active {
+            transform: scale(0.94);
+        }
+
+        .save-btn {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            border: none;
+            cursor: pointer;
+            background: var(--accent);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            padding: 9px 16px;
+            border-radius: 20px;
+            margin-left: 6px;
+            box-shadow: 0 4px 14px rgba(77, 141, 255, 0.35);
+            transition: transform 0.15s, box-shadow 0.2s;
+        }
+
+        .save-btn:hover {
+            box-shadow: 0 6px 18px rgba(77, 141, 255, 0.45);
+        }
+
+        .save-btn:active {
+            transform: scale(0.96);
+        }
+
+        .save-btn i {
+            font-size: 13px;
+        }
+
+        /* ---------- Upload ---------- */
 
         .upload-area {
             flex: 1;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 3rem 2rem;
-            text-align: center;
-            margin: 2rem;
-            border-radius: 20px;
-            background: white;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            gap: 14px;
+            margin: 20px;
+            border: 1.5px dashed rgba(255, 255, 255, 0.18);
+            border-radius: 22px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            padding: 48px 24px;
+            text-align: center;
+            background: var(--panel);
+            transition: border-color 0.25s, background 0.25s;
         }
 
         .upload-area:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            border-color: var(--accent);
+            background: #15151b;
         }
 
         .upload-area.hidden {
             display: none;
         }
 
+        .upload-icon {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: var(--accent-soft);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+
         .upload-content h2 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
+            font-size: 18px;
             font-weight: 600;
+            margin-bottom: 6px;
         }
 
         .upload-content p {
-            color: #86868b;
-            font-size: 1rem;
+            color: var(--text-2);
+            font-size: 14px;
         }
+
+        .file-input {
+            display: none;
+        }
+
+        /* ---------- Stage ---------- */
 
         .canvas-container {
             flex: 1;
+            min-height: 0;
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 1rem;
+            padding: 14px;
             position: relative;
         }
 
@@ -94,53 +225,61 @@
 
         .canvas-wrapper {
             position: relative;
-            border-radius: 12px;
+            border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 12px 44px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--hairline);
+            max-width: 100%;
+            max-height: 100%;
         }
 
         canvas {
             display: block;
-            max-width: calc(100vw - 2rem);
-            max-height: 60vh;
+            max-width: 100%;
+            max-height: 100%;
+            touch-action: none;
         }
 
         .crop-overlay {
             position: absolute;
-            border: 2px solid #007AFF;
-            background: rgba(0, 122, 255, 0.1);
+            border: 1.5px solid var(--accent);
+            background: rgba(77, 141, 255, 0.08);
             cursor: move;
             display: none;
-            border-radius: 4px;
+            border-radius: 6px;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
         }
 
         .crop-handle {
             position: absolute;
-            width: 14px;
-            height: 14px;
-            background: #007AFF;
-            border: 3px solid white;
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border: 2px solid var(--accent);
             border-radius: 50%;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
         }
 
-        .crop-handle.nw { top: -7px; left: -7px; cursor: nw-resize; }
-        .crop-handle.ne { top: -7px; right: -7px; cursor: ne-resize; }
-        .crop-handle.sw { bottom: -7px; left: -7px; cursor: sw-resize; }
-        .crop-handle.se { bottom: -7px; right: -7px; cursor: se-resize; }
-        .crop-handle.n { top: -7px; left: 50%; margin-left: -7px; cursor: n-resize; }
-        .crop-handle.s { bottom: -7px; left: 50%; margin-left: -7px; cursor: s-resize; }
-        .crop-handle.e { right: -7px; top: 50%; margin-top: -7px; cursor: e-resize; }
-        .crop-handle.w { left: -7px; top: 50%; margin-top: -7px; cursor: w-resize; }
+        .crop-handle.nw { top: -8px; left: -8px; cursor: nw-resize; }
+        .crop-handle.ne { top: -8px; right: -8px; cursor: ne-resize; }
+        .crop-handle.sw { bottom: -8px; left: -8px; cursor: sw-resize; }
+        .crop-handle.se { bottom: -8px; right: -8px; cursor: se-resize; }
+        .crop-handle.n { top: -8px; left: 50%; margin-left: -8px; cursor: n-resize; }
+        .crop-handle.s { bottom: -8px; left: 50%; margin-left: -8px; cursor: s-resize; }
+        .crop-handle.e { right: -8px; top: 50%; margin-top: -8px; cursor: e-resize; }
+        .crop-handle.w { left: -8px; top: 50%; margin-top: -8px; cursor: w-resize; }
+
+        /* ---------- Dock ---------- */
 
         .controls {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-top: 0.5px solid rgba(0, 0, 0, 0.1);
-            padding: 1rem;
             display: none;
-            max-height: 50vh;
-            overflow-y: auto;
+            flex-shrink: 0;
+            background: rgba(20, 20, 24, 0.94);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid var(--hairline);
+            border-radius: 20px 20px 0 0;
+            padding-bottom: calc(8px + env(safe-area-inset-bottom));
         }
 
         .controls.active {
@@ -149,29 +288,53 @@
 
         .tab-navigation {
             display: flex;
-            margin-bottom: 1.5rem;
-            background: #f2f2f7;
-            border-radius: 10px;
-            padding: 2px;
+            padding: 10px 12px 2px;
+            gap: 4px;
         }
 
         .tab-btn {
             flex: 1;
-            padding: 0.75rem;
             border: none;
             background: transparent;
-            border-radius: 8px;
-            font-weight: 500;
-            font-size: 0.9rem;
+            color: var(--text-3);
             cursor: pointer;
-            transition: all 0.2s ease;
-            color: #86868b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 4px 12px;
+            font-size: 11px;
+            font-weight: 500;
+            font-family: inherit;
+            border-radius: 12px;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .tab-btn i {
+            font-size: 19px;
         }
 
         .tab-btn.active {
-            background: white;
-            color: #1d1d1f;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            color: var(--accent);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            width: 22px;
+            height: 3px;
+            border-radius: 2px;
+            background: var(--accent);
+        }
+
+        .tab-pages {
+            max-height: 36vh;
+            overflow-y: auto;
+            padding: 8px 18px 14px;
+            scrollbar-width: thin;
+            scrollbar-color: #33333c transparent;
         }
 
         .tab-content {
@@ -180,292 +343,379 @@
 
         .tab-content.active {
             display: block;
+            animation: fadeUp 0.25s ease;
         }
 
-        .control-group {
-            margin-bottom: 1.5rem;
-            background: white;
-            padding: 1rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .control-group:last-child {
-            margin-bottom: 0;
+        /* ---------- Sliders ---------- */
+
+        .ctl {
+            margin-bottom: 14px;
         }
 
-        .control-group label {
-            display: block;
-            margin-bottom: 0.75rem;
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #1d1d1f;
+        .ctl:last-child {
+            margin-bottom: 4px;
         }
 
-        .slider-container {
+        .ctl-head {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            justify-content: space-between;
+            margin-bottom: 2px;
+        }
+
+        .ctl-head label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .value-display {
+            font-size: 13px;
+            color: var(--text-2);
+            font-variant-numeric: tabular-nums;
+            min-width: 44px;
+            text-align: right;
         }
 
         input[type="range"] {
-            flex: 1;
-            height: 4px;
-            background: #e5e5ea;
-            border-radius: 2px;
-            outline: none;
             -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 30px;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 4px;
+            border-radius: 2px;
+            background: #33333c;
         }
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 24px;
-            height: 24px;
-            background: #007AFF;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+            background: #fff;
+            margin-top: -9px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            border: none;
+        }
+
+        input[type="range"]::-moz-range-track {
+            height: 4px;
+            border-radius: 2px;
+            background: #33333c;
         }
 
         input[type="range"]::-moz-range-thumb {
-            width: 24px;
-            height: 24px;
-            background: #007AFF;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
-            cursor: pointer;
+            background: #fff;
             border: none;
-            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
         }
 
-        .value-display {
-            min-width: 50px;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #86868b;
+        /* ---------- Filters ---------- */
+
+        .filter-row {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 6px 2px 14px;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+        }
+
+        .filter-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-option {
+            flex: 0 0 auto;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            font-family: inherit;
+        }
+
+        .filter-preview {
+            width: 66px;
+            height: 66px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+        }
+
+        .filter-option:hover .filter-preview {
+            transform: scale(1.05);
+        }
+
+        .filter-option.active .filter-preview {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(77, 141, 255, 0.25);
+        }
+
+        .filter-name {
+            font-size: 12px;
+            color: var(--text-2);
             font-weight: 500;
         }
 
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 0.75rem;
+        .filter-option.active .filter-name {
+            color: var(--text);
         }
+
+        .f-none { background: linear-gradient(135deg, #3a3a42, #17171b); }
+        .f-vintage { background: linear-gradient(135deg, #d9b98c, #6e5233); }
+        .f-monochrome { background: linear-gradient(135deg, #f2f2f2, #3a3a3a); }
+        .f-sepia { background: linear-gradient(135deg, #eac484, #6b4a26); }
+        .f-dramatic { background: linear-gradient(135deg, #46587e, #0b1220); }
+        .f-vivid { background: linear-gradient(135deg, #ff6b81, #ffb347); }
+        .f-cool { background: linear-gradient(135deg, #8fd3f4, #2c4a73); }
+        .f-warm { background: linear-gradient(135deg, #ffc46b, #e2703a); }
+
+        /* ---------- Tools ---------- */
 
         .tool-buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            gap: 10px;
+            margin: 6px 0 18px;
         }
 
         .tool-btn {
-            background: white;
-            border: 2px solid #e5e5ea;
-            padding: 1rem;
-            border-radius: 12px;
+            background: var(--panel-2);
+            border: 1.5px solid transparent;
+            border-radius: 14px;
+            padding: 14px 6px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.5rem;
+            gap: 8px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 0.85rem;
+            font-size: 12px;
             font-weight: 500;
+            font-family: inherit;
+            color: var(--text-2);
+            transition: all 0.2s;
+        }
+
+        .tool-btn i {
+            font-size: 20px;
         }
 
         .tool-btn:hover {
-            border-color: #007AFF;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.15);
+            background: var(--panel-3);
+            color: var(--text);
         }
 
         .tool-btn.active {
-            border-color: #007AFF;
-            background: rgba(0, 122, 255, 0.05);
-        }
-
-        button {
-            background: #007AFF;
-            color: white;
-            border: none;
-            padding: 0.875rem 1rem;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            min-height: 44px;
-        }
-
-        button:hover {
-            background: #0056CC;
-            transform: translateY(-1px);
-        }
-
-        button.secondary {
-            background: #f2f2f7;
-            color: #1d1d1f;
-        }
-
-        button.secondary:hover {
-            background: #e5e5ea;
-        }
-
-        button.danger {
-            background: #ff3b30;
-        }
-
-        button.danger:hover {
-            background: #d70015;
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .filter-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .filter-option {
-            aspect-ratio: 1;
-            border: 2px solid #e5e5ea;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: 500;
-            text-align: center;
-        }
-
-        .filter-option:hover {
-            border-color: #007AFF;
-        }
-
-        .filter-option.active {
-            border-color: #007AFF;
-            background: rgba(0, 122, 255, 0.05);
-        }
-
-        .loading {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-            z-index: 1000;
-            display: none;
-            text-align: center;
-        }
-
-        .spinner {
-            width: 30px;
-            height: 30px;
-            border: 3px solid #e5e5ea;
-            border-top: 3px solid #007AFF;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                padding: 0.75rem;
-            }
-
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .upload-area {
-                margin: 1rem;
-                padding: 2rem 1rem;
-            }
-
-            .tool-buttons {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .buttons {
-                grid-template-columns: 1fr;
-            }
-
-            canvas {
-                max-height: 50vh;
-            }
-
-            .controls {
-                max-height: 45vh;
-            }
-        }
-
-        .history-controls {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-soft);
         }
 
         .color-picker-container {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-top: 0.5rem;
+            gap: 12px;
         }
 
         input[type="color"] {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
+            background: none;
+            padding: 0;
+            flex-shrink: 0;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+            border: 1px solid var(--hairline);
+            border-radius: 12px;
+        }
+
+        input[type="color"]::-moz-color-swatch {
+            border: 1px solid var(--hairline);
+            border-radius: 12px;
         }
 
         .preset-colors {
             display: flex;
-            gap: 0.5rem;
+            gap: 10px;
             flex-wrap: wrap;
-            margin-top: 0.5rem;
         }
 
         .preset-color {
-            width: 30px;
-            height: 30px;
-            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
             cursor: pointer;
-            border: 2px solid #e5e5ea;
-            transition: transform 0.2s ease;
+            border: 1px solid var(--hairline);
+            transition: transform 0.15s;
         }
 
         .preset-color:hover {
-            transform: scale(1.1);
+            transform: scale(1.12);
+        }
+
+        /* ---------- Effects ---------- */
+
+        .enhance-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            border: 1px solid rgba(77, 141, 255, 0.35);
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s, transform 0.15s;
+        }
+
+        .enhance-btn:hover {
+            background: rgba(77, 141, 255, 0.22);
+        }
+
+        .enhance-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* ---------- Loading & toast ---------- */
+
+        .loading {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+        }
+
+        .loading-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--panel-2);
+            border: 1px solid var(--hairline);
+            padding: 28px 36px;
+            border-radius: 18px;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid #33333c;
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 14px;
+        }
+
+        .loading p {
+            font-size: 14px;
+            color: var(--text-2);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 110px;
+            transform: translateX(-50%) translateY(12px);
+            background: #26262e;
+            color: var(--text);
+            border: 1px solid var(--hairline);
+            padding: 12px 20px;
+            border-radius: 24px;
+            font-size: 14px;
+            z-index: 1100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s, transform 0.25s;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            white-space: nowrap;
+            max-width: 90vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (min-width: 768px) {
+            .tab-pages {
+                max-height: 40vh;
+                max-width: 720px;
+                margin: 0 auto;
+            }
+
+            .upload-area {
+                max-width: 560px;
+                margin: 32px auto;
+                width: calc(100% - 40px);
+            }
+
+            .topbar {
+                padding: 10px 22px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>Pixora</h1>
-        </div>
+        <header class="topbar">
+            <div class="brand">
+                <span class="brand-mark"><i class="fas fa-wand-magic-sparkles"></i></span>
+                <span class="brand-name">Pixora</span>
+            </div>
+            <div class="top-actions">
+                <button class="icon-btn" onclick="undo()" aria-label="Undo"><i class="fas fa-undo"></i></button>
+                <button class="icon-btn" onclick="redo()" aria-label="Redo"><i class="fas fa-redo"></i></button>
+                <button class="icon-btn" onclick="resetImage()" aria-label="Reset"><i class="fas fa-arrow-rotate-left"></i></button>
+                <button class="save-btn" onclick="downloadImage()"><i class="fas fa-download"></i><span>Save</span></button>
+            </div>
+        </header>
 
         <div class="upload-area" id="uploadArea">
+            <div class="upload-icon"><i class="fas fa-image"></i></div>
             <div class="upload-content">
-                <h2>📷 Choose Photo</h2>
-                <p>Tap to select or drag and drop</p>
+                <h2>Choose a photo</h2>
+                <p>Tap to browse or drag and drop</p>
                 <input type="file" id="fileInput" class="file-input" accept="image/*">
             </div>
         </div>
@@ -487,198 +737,124 @@
         </div>
 
         <div class="controls" id="controls">
-            <div class="tab-navigation">
-                <button class="tab-btn active" onclick="switchTab('adjust')">Adjust</button>
-                <button class="tab-btn" onclick="switchTab('filters')">Filters</button>
-                <button class="tab-btn" onclick="switchTab('tools')">Tools</button>
-                <button class="tab-btn" onclick="switchTab('effects')">Effects</button>
-            </div>
+            <nav class="tab-navigation">
+                <button class="tab-btn active" onclick="switchTab('adjust', this)"><i class="fas fa-sliders"></i><span>Adjust</span></button>
+                <button class="tab-btn" onclick="switchTab('filters', this)"><i class="fas fa-layer-group"></i><span>Filters</span></button>
+                <button class="tab-btn" onclick="switchTab('tools', this)"><i class="fas fa-screwdriver-wrench"></i><span>Tools</span></button>
+                <button class="tab-btn" onclick="switchTab('effects', this)"><i class="fas fa-wand-magic-sparkles"></i><span>Effects</span></button>
+            </nav>
 
-            <div class="tab-content active" id="adjust">
-                <div class="control-group">
-                    <label>Exposure</label>
-                    <div class="slider-container">
+            <div class="tab-pages">
+                <div class="tab-content active" id="adjust">
+                    <div class="ctl">
+                        <div class="ctl-head"><label>Exposure</label><span class="value-display" id="exposureValue">0</span></div>
                         <input type="range" id="exposure" min="-100" max="100" value="0">
-                        <span class="value-display" id="exposureValue">0</span>
                     </div>
-                </div>
-
-                <div class="control-group">
-                    <label>Brightness</label>
-                    <div class="slider-container">
+                    <div class="ctl">
+                        <div class="ctl-head"><label>Brightness</label><span class="value-display" id="brightnessValue">100</span></div>
                         <input type="range" id="brightness" min="0" max="200" value="100">
-                        <span class="value-display" id="brightnessValue">100</span>
                     </div>
-                </div>
-
-                <div class="control-group">
-                    <label>Highlights</label>
-                    <div class="slider-container">
+                    <div class="ctl">
+                        <div class="ctl-head"><label>Highlights</label><span class="value-display" id="highlightsValue">0</span></div>
                         <input type="range" id="highlights" min="-100" max="100" value="0">
-                        <span class="value-display" id="highlightsValue">0</span>
                     </div>
-                </div>
-
-                <div class="control-group">
-                    <label>Shadows</label>
-                    <div class="slider-container">
+                    <div class="ctl">
+                        <div class="ctl-head"><label>Shadows</label><span class="value-display" id="shadowsValue">0</span></div>
                         <input type="range" id="shadows" min="-100" max="100" value="0">
-                        <span class="value-display" id="shadowsValue">0</span>
                     </div>
-                </div>
-
-                <div class="control-group">
-                    <label>Contrast</label>
-                    <div class="slider-container">
+                    <div class="ctl">
+                        <div class="ctl-head"><label>Contrast</label><span class="value-display" id="contrastValue">100</span></div>
                         <input type="range" id="contrast" min="0" max="200" value="100">
-                        <span class="value-display" id="contrastValue">100</span>
                     </div>
-                </div>
-
-                <div class="control-group">
-                    <label>Saturation</label>
-                    <div class="slider-container">
+                    <div class="ctl">
+                        <div class="ctl-head"><label>Saturation</label><span class="value-display" id="saturationValue">100</span></div>
                         <input type="range" id="saturation" min="0" max="200" value="100">
-                        <span class="value-display" id="saturationValue">100</span>
                     </div>
-                </div>
-
-                <div class="control-group">
-                    <label>Vibrance</label>
-                    <div class="slider-container">
+                    <div class="ctl">
+                        <div class="ctl-head"><label>Vibrance</label><span class="value-display" id="vibranceValue">0</span></div>
                         <input type="range" id="vibrance" min="-100" max="100" value="0">
-                        <span class="value-display" id="vibranceValue">0</span>
                     </div>
-                </div>
-
-                <div class="control-group">
-                    <label>Warmth</label>
-                    <div class="slider-container">
+                    <div class="ctl">
+                        <div class="ctl-head"><label>Warmth</label><span class="value-display" id="warmthValue">0</span></div>
                         <input type="range" id="warmth" min="-100" max="100" value="0">
-                        <span class="value-display" id="warmthValue">0</span>
                     </div>
-                </div>
-
-                <div class="control-group">
-                    <label>Tint</label>
-                    <div class="slider-container">
+                    <div class="ctl">
+                        <div class="ctl-head"><label>Tint</label><span class="value-display" id="tintValue">0</span></div>
                         <input type="range" id="tint" min="-100" max="100" value="0">
-                        <span class="value-display" id="tintValue">0</span>
                     </div>
-                </div>
-
-                <div class="control-group">
-                    <label>Sharpness</label>
-                    <div class="slider-container">
+                    <div class="ctl">
+                        <div class="ctl-head"><label>Sharpness</label><span class="value-display" id="sharpnessValue">0</span></div>
                         <input type="range" id="sharpness" min="0" max="100" value="0">
-                        <span class="value-display" id="sharpnessValue">0</span>
                     </div>
                 </div>
-            </div>
 
-            <div class="tab-content" id="filters">
-                <div class="filter-grid">
-                    <div class="filter-option active" onclick="applyFilter('none')">Original</div>
-                    <div class="filter-option" onclick="applyFilter('vintage')">Vintage</div>
-                    <div class="filter-option" onclick="applyFilter('monochrome')">B&W</div>
-                    <div class="filter-option" onclick="applyFilter('sepia')">Sepia</div>
-                    <div class="filter-option" onclick="applyFilter('dramatic')">Dramatic</div>
-                    <div class="filter-option" onclick="applyFilter('vivid')">Vivid</div>
-                    <div class="filter-option" onclick="applyFilter('cool')">Cool</div>
-                    <div class="filter-option" onclick="applyFilter('warm')">Warm</div>
-                </div>
-
-                <div class="control-group">
-                    <label>Filter Intensity</label>
-                    <div class="slider-container">
+                <div class="tab-content" id="filters">
+                    <div class="filter-row">
+                        <div class="filter-option active" onclick="applyFilter('none', this)"><span class="filter-preview f-none"></span><span class="filter-name">Original</span></div>
+                        <div class="filter-option" onclick="applyFilter('vintage', this)"><span class="filter-preview f-vintage"></span><span class="filter-name">Vintage</span></div>
+                        <div class="filter-option" onclick="applyFilter('monochrome', this)"><span class="filter-preview f-monochrome"></span><span class="filter-name">B&amp;W</span></div>
+                        <div class="filter-option" onclick="applyFilter('sepia', this)"><span class="filter-preview f-sepia"></span><span class="filter-name">Sepia</span></div>
+                        <div class="filter-option" onclick="applyFilter('dramatic', this)"><span class="filter-preview f-dramatic"></span><span class="filter-name">Dramatic</span></div>
+                        <div class="filter-option" onclick="applyFilter('vivid', this)"><span class="filter-preview f-vivid"></span><span class="filter-name">Vivid</span></div>
+                        <div class="filter-option" onclick="applyFilter('cool', this)"><span class="filter-preview f-cool"></span><span class="filter-name">Cool</span></div>
+                        <div class="filter-option" onclick="applyFilter('warm', this)"><span class="filter-preview f-warm"></span><span class="filter-name">Warm</span></div>
+                    </div>
+                    <div class="ctl">
+                        <div class="ctl-head"><label>Intensity</label><span class="value-display" id="filterIntensityValue">100</span></div>
                         <input type="range" id="filterIntensity" min="0" max="100" value="100">
-                        <span class="value-display" id="filterIntensityValue">100</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-content" id="tools">
-                <div class="tool-buttons">
-                    <div class="tool-btn" onclick="toggleCrop()">
-                        ✂️
-                        <span>Crop</span>
-                    </div>
-                    <div class="tool-btn" onclick="rotateImage()">
-                        🔄
-                        <span>Rotate</span>
-                    </div>
-                    <div class="tool-btn" onclick="flipHorizontal()">
-                        ↔️
-                        <span>Flip H</span>
-                    </div>
-                    <div class="tool-btn" onclick="flipVertical()">
-                        ↕️
-                        <span>Flip V</span>
                     </div>
                 </div>
 
-                <div class="control-group">
-                    <label>Background Color (for transparency)</label>
-                    <div class="color-picker-container">
-                        <input type="color" id="bgColor" value="#ffffff">
-                        <span>Choose background color</span>
+                <div class="tab-content" id="tools">
+                    <div class="tool-buttons">
+                        <div class="tool-btn" id="cropBtn" onclick="toggleCrop()"><i class="fas fa-crop"></i><span>Crop</span></div>
+                        <div class="tool-btn" onclick="rotateImage()"><i class="fas fa-rotate-right"></i><span>Rotate</span></div>
+                        <div class="tool-btn" onclick="flipHorizontal()"><i class="fas fa-left-right"></i><span>Flip H</span></div>
+                        <div class="tool-btn" onclick="flipVertical()"><i class="fas fa-up-down"></i><span>Flip V</span></div>
                     </div>
-                    <div class="preset-colors">
-                        <div class="preset-color" style="background: #ffffff" onclick="setBgColor('#ffffff')"></div>
-                        <div class="preset-color" style="background: #000000" onclick="setBgColor('#000000')"></div>
-                        <div class="preset-color" style="background: #ff0000" onclick="setBgColor('#ff0000')"></div>
-                        <div class="preset-color" style="background: #00ff00" onclick="setBgColor('#00ff00')"></div>
-                        <div class="preset-color" style="background: #0000ff" onclick="setBgColor('#0000ff')"></div>
-                        <div class="preset-color" style="background: #ffff00" onclick="setBgColor('#ffff00')"></div>
+                    <div class="ctl">
+                        <div class="ctl-head"><label>Background</label></div>
+                        <div class="color-picker-container">
+                            <input type="color" id="bgColor" value="#ffffff">
+                            <div class="preset-colors">
+                                <div class="preset-color" style="background: #ffffff" onclick="setBgColor('#ffffff')"></div>
+                                <div class="preset-color" style="background: #000000" onclick="setBgColor('#000000')"></div>
+                                <div class="preset-color" style="background: #ff0000" onclick="setBgColor('#ff0000')"></div>
+                                <div class="preset-color" style="background: #00ff00" onclick="setBgColor('#00ff00')"></div>
+                                <div class="preset-color" style="background: #0000ff" onclick="setBgColor('#0000ff')"></div>
+                                <div class="preset-color" style="background: #ffff00" onclick="setBgColor('#ffff00')"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="history-controls">
-                    <button onclick="undo()" class="secondary">↶ Undo</button>
-                    <button onclick="redo()" class="secondary">↷ Redo</button>
-                </div>
-            </div>
-
-            <div class="tab-content" id="effects">
-                <div class="control-group">
-                    <label>Blur</label>
-                    <div class="slider-container">
+                <div class="tab-content" id="effects">
+                    <div class="ctl">
+                        <div class="ctl-head"><label>Blur</label><span class="value-display" id="blurValue">0</span></div>
                         <input type="range" id="blur" min="0" max="20" value="0">
-                        <span class="value-display" id="blurValue">0</span>
                     </div>
-                </div>
-
-                <div class="control-group">
-                    <label>Noise</label>
-                    <div class="slider-container">
+                    <div class="ctl">
+                        <div class="ctl-head"><label>Noise</label><span class="value-display" id="noiseValue">0</span></div>
                         <input type="range" id="noise" min="0" max="100" value="0">
-                        <span class="value-display" id="noiseValue">0</span>
                     </div>
-                </div>
-
-                <div class="control-group">
-                    <label>Vignette</label>
-                    <div class="slider-container">
+                    <div class="ctl">
+                        <div class="ctl-head"><label>Vignette</label><span class="value-display" id="vignetteValue">0</span></div>
                         <input type="range" id="vignette" min="0" max="100" value="0">
-                        <span class="value-display" id="vignetteValue">0</span>
                     </div>
+                    <button class="enhance-btn" onclick="enhancePhoto()"><i class="fas fa-wand-magic-sparkles"></i> AI Enhance</button>
                 </div>
-
-                <button onclick="enhancePhoto()" class="secondary">🤖 AI Enhance</button>
-            </div>
-
-            <div class="buttons">
-                <button onclick="resetImage()" class="secondary">↩️ Reset</button>
-                <button onclick="downloadImage()">💾 Save Photo</button>
             </div>
         </div>
     </div>
 
     <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <p>Processing your photo...</p>
+        <div class="loading-box">
+            <div class="spinner"></div>
+            <p>Processing your photo...</p>
+        </div>
     </div>
 
+    <div class="toast" id="toast"></div>
     <script>
         let canvas, ctx, originalImage, currentImage;
         let cropMode = false;
@@ -760,7 +936,7 @@
 
         function handleFile(file) {
             if (!file.type.startsWith('image/')) {
-                alert('Please select an image file');
+                toast('Please select an image file');
                 return;
             }
 
@@ -774,7 +950,7 @@
                 };
                 img.onerror = function() {
                     hideLoading();
-                    alert('Error loading image');
+                    toast('Error loading image');
                 };
                 img.src = e.target.result;
             };
@@ -805,6 +981,7 @@
             document.getElementById('uploadArea').classList.add('hidden');
             document.getElementById('canvasContainer').classList.add('active');
             document.getElementById('controls').classList.add('active');
+            document.body.classList.add('editing');
 
             // Reset all controls
             resetControls();
@@ -950,12 +1127,12 @@
             }
         }
 
-        function applyFilter(filterName) {
+        function applyFilter(filterName, el) {
             // Update active filter button
             document.querySelectorAll('.filter-option').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            el.classList.add('active');
             
             currentFilter = filterName;
             applyAllEffects();
@@ -1029,6 +1206,7 @@
 
         function toggleCrop() {
             cropMode = !cropMode;
+            document.getElementById('cropBtn').classList.toggle('active', cropMode);
             const cropOverlay = document.getElementById('cropOverlay');
             
             if (cropMode) {
@@ -1241,12 +1419,12 @@
             newImg.src = tempCanvas.toDataURL();
         }
 
-        function switchTab(tabName) {
+        function switchTab(tabName, el) {
             // Update tab buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            el.classList.add('active');
             
             // Update tab content
             document.querySelectorAll('.tab-content').forEach(content => {
@@ -1378,12 +1556,12 @@
                     applyAllEffects();
                     hideLoading();
                     
-                    alert('✨ Photo enhanced with AI adjustments!');
+                    toast('Photo enhanced');
                 }, 2000);
                 
             } catch (error) {
                 hideLoading();
-                alert('Enhancement failed. Please try again.');
+                toast('Enhancement failed. Please try again.');
             }
         }
 
@@ -1397,6 +1575,14 @@
             link.download = `photo-edit-${timestamp}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
+        }
+
+        function toast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => t.classList.remove('show'), 2600);
         }
 
         function showLoading() {
